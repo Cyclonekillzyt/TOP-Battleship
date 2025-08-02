@@ -5,16 +5,31 @@ export class Ship {
     this.sunk = false;
     this.position = [];
   }
-  Hit(coord) {
-    this.hitCount += 1;
-    return 1;
+  Hit() {
+    console.log('Hit')
+    return (this.hitCount += 1);
   }
   isSunk() {
     if (this.hitCount === this.length) {
+      console.log('going down')
       return true;
     } else {
       return false;
     }
+  }
+}
+
+export class Fleet {
+  constructor() {
+    this.ships = [];
+  }
+
+  addShip(ship) {
+    this.ships.push(ship);
+  }
+
+  getShipAt(coord) {
+    return this.ships.find((ship) => ship.position.includes(coord));
   }
 }
 
@@ -29,7 +44,6 @@ export class Gameboard {
     this.column();
     this.taken = [];
     this.attacked = [];
-
   }
   possible_rows = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   possible_columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
@@ -63,34 +77,51 @@ export class Gameboard {
   placeShip(ship, coordinates, orientation) {
     if (!this.taken.includes(coordinates)) {
       if (orientation == "row") {
-        let startCoords = this.board.findIndex(item => item === coordinates);
-        for (let i = 0; i < ship.length; i++){
+        let startCoords = this.rows.findIndex((item) => item === coordinates);
+        for (let i = 0; i < ship.length; i++) {
           let coord = this.rows[startCoords];
-          ship.position.push(coord)
+          ship.position.push(coord);
           this.taken.push(coord);
           startCoords++;
         }
-        return;
+        let pos = ship.position;
+        let taken = this.taken;
+        return { pos, taken };
       }
-      if(orientation == 'column'){
-        let startCoords = this.board.findIndex(item => item === coordinates);
-        let coords = [];
-        for (let i = 0; i < ship.length; i++){
+      if (orientation == "column") {
+        let startCoords = this.columns.findIndex(
+          (item) => item === coordinates
+        );
+        for (let i = 0; i < ship.length; i++) {
           let coord = this.columns[startCoords];
           ship.position.push(coord);
           this.taken.push(coord);
           startCoords++;
         }
-        return;
+        let pos = ship.position;
+        let taken = this.taken;
+        return { pos, taken };
       }
       return;
+    } else {
+      return 'position is taken';
     }
   }
-  receiveAttack(coord){
-
+  receiveAttack(coord,fleet) {
+    if (!this.attacked.includes(coord)) {
+      let attackedShip = fleet.getShipAt(coord);
+      if (attackedShip) {
+        attackedShip.Hit();
+        attackedShip.isSunk();
+        this.attacked.push(coord);
+        return `its a hit`
+      }
+      else{
+        this.attacked.push(coord);
+        return 'its a miss'
+      }
+    }
+    return 'Already hit';
   }
 }
 
-const ship = new Ship(3);
-const board = new Gameboard(10);
-console.log(board.placeShip(ship, 'A1', 'row'), board.rows, board.placeShip(ship, 'A1','column' ))

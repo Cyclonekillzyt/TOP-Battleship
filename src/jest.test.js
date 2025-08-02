@@ -1,4 +1,4 @@
-import {Ship, Gameboard} from "./main";
+import {Ship, Gameboard, Fleet} from "./main";
 
 describe('Ship class', ()=>{
   it('should return the number of times the ship has been hit' , () =>{
@@ -30,7 +30,7 @@ describe("Gameboard class", () => {
     expect(board.board).toContain("C5");
   });
 
-  test("should place a ship in a row correctly", () => {
+  it("should place a ship in a row correctly", () => {
     const board = new Gameboard(10);
     const ship = new Ship(3);
     board.placeShip(ship, "A1", "row");
@@ -39,7 +39,7 @@ describe("Gameboard class", () => {
     expect(board.taken).toEqual(ship.position);
   });
 
-  test("should place a ship in a column correctly", () => {
+  it("should place a ship in a column correctly", () => {
     const board = new Gameboard(10);
     const ship = new Ship(2);
     board.placeShip(ship, "B1", "column");
@@ -48,18 +48,43 @@ describe("Gameboard class", () => {
     expect(board.taken).toEqual(ship.position);
   });
 
-  test("should not place ship on taken coordinates", () => {
+  it("should throw an error if the position is taken", () => {
     const board = new Gameboard(10);
     const ship1 = new Ship(3);
     const ship2 = new Ship(3);
 
     board.placeShip(ship1, "A1", "row");
-    const takenBefore = [...board.taken];
 
-    board.placeShip(ship2, "A1", "row"); // same starting point
-    expect(ship2.position.length).toBe(0); // should not place
-    expect(board.taken).toEqual(takenBefore); // no new coords added
+    
+    expect(board.placeShip(ship2, "A1", "row")).toEqual('position is taken');
   });
+
+  it('should attack specific coordinates and check if a shipt has been hit',()=>{
+    const board = new Gameboard(10);
+    const ship1 = new Ship(3);
+    const ship2 = new Ship(3);
+    const fleet = new Fleet();
+
+    board.placeShip(ship1, 'A3', 'column');
+    board.placeShip(ship2, "B6", "column");
+
+    fleet.addShip(ship1);
+    fleet.addShip(ship2);
+
+
+   expect(board.receiveAttack('A3', fleet)).toBe('its a hit')
+   expect(board.receiveAttack("A6", fleet)).toBe("its a miss");
+   expect(ship1.hitCount).toEqual(1);
+  })
  
 });
+
+describe('Fleet class', () =>{
+  it('should create an Object named fleet to house all the ships',() =>{
+    const fleet = new Fleet();
+    const battleShip = new Ship();
+    fleet.addShip(battleShip);
+    expect(fleet.ships.length).toEqual(1)
+  })
+})
 
