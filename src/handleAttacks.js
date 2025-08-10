@@ -1,3 +1,4 @@
+import { gameOverScreen } from "./dom";
 export function handleAttack(players) {
   let Player1Turn = true;
   const computerTiles = document.querySelectorAll(".computer .tiles");
@@ -15,21 +16,18 @@ export function handleAttack(players) {
         tile.value,
         attackVectors.attackFleet
       );
-      if (!attackVectors.attackFleet.allShipsSunk()) {
-        if (attack === 1) {
-          tile.classList.add("hit");
-        } else if (attack === 2) {
-          tile.classList.add("miss");
-          Player1Turn = !Player1Turn;
-          checkTurn(playerBoard, computerBoard, Player1Turn);
-        } else {
-          alert("You have already attacked that position");
+      if (attack === 1) {
+        tile.classList.add("hit");
+        if(attackVectors.attackFleet.allShipsSunk()){
+          gameOverScreen(attackVectors.opponent.name);
         }
+        ;
+      } else if (attack === 2) {
+        tile.classList.add("miss");
+        Player1Turn = !Player1Turn;
+        checkTurn(playerBoard, computerBoard, Player1Turn);
       }
-      else{
-        alert('all ships sunk')
-      }
-      console.log(tile, attack);
+      checkWinConditions(attackVectors.attackFleet, players);
     });
   }
 
@@ -59,6 +57,7 @@ function checkTurn(playerBoard, computerBoard, turn) {
     computerBoard.forEach((el) => {
       el.style.display = "none";
     });
+    
     return 2;
   }
 }
@@ -69,12 +68,15 @@ function checkAttackVectors(ships, players) {
       players.computerBoard
     );
     const attackFleet = players.computerFleet;
-    return { attackFleet, attackFunction };
+    const opponent = players.player;
+    return { attackFleet, attackFunction, opponent };
   } else {
     const attackFunction = players.playerBoard.receiveAttack.bind(
       players.playerBoard
     );
     const attackFleet = players.playerFleet;
-    return { attackFleet, attackFunction };
+    const opponent = players.computerPlayer;
+    return { attackFleet, attackFunction, opponent };
   }
 }
+

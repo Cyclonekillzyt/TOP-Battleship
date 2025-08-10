@@ -2,6 +2,7 @@ import { handleAttack } from "./handleAttacks";
 import { initializePlayers } from "./createPlayers";
 import { createShips } from "./createShips";
 
+
 document.addEventListener("DOMContentLoaded", start);
 
 function start() {
@@ -30,4 +31,5 @@ function start() {
   handleAttack(initPlayers);
   //player1's turn
   //displayedBoard(true);
+  
 }
