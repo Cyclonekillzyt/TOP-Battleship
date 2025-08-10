@@ -5,5 +5,43 @@
 }
 
 body{
-  background-color: aquamarine;
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container{
+  background-color: blue;
+  width: 100%;
+  height: 100%;
+}
+
+.board{
+  border:  2px solid red;
+  display: grid;
+  aspect-ratio: 1/1;
+  max-width: 90vw;
+  min-height: 90vh;
+}
+
+.tiles{
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: 1px solid gray;
+}
+
+.ship {
+  background-color: gray;
+}
+
+.hit {
+  background-color: red;
+}
+
+.miss {
+  background-color: lightblue;
 }

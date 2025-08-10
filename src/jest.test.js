@@ -1,4 +1,4 @@
-import { Ship, Gameboard, Fleet } from "./main";
+import { Ship, Gameboard, Fleet } from "./setup.js";
 
 describe("Ship class", () => {
   it("should return the number of times the ship has been hit", () => {
