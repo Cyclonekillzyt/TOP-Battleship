@@ -1,42 +1,76 @@
 import { gameOverScreen } from "./dom";
 export function handleAttack(players) {
-  let Player1Turn = true;
+  let Player1Turn;
   const computerTiles = document.querySelectorAll(".computer .tiles");
   const playerTiles = document.querySelectorAll(".human .tiles");
 
   const playerBoard = document.querySelectorAll(".human");
   const computerBoard = document.querySelectorAll(".computer");
-  checkTurn(playerBoard, computerBoard, Player1Turn);
+  start();
+
+  function start() {
+    console.log('hi')
+    Player1Turn = true;
+    nextTurn();
+  }
+
+  function nextTurn() {
+   checkTurn(playerBoard, computerBoard, Player1Turn);
+    if(Player1Turn){
+      computerTiles.forEach((tile) => {
+        tile.onclick = () => {
+          handleClicks(tile);
+        };
+      });
+    }
+    else{
+      setTimeout(() =>{
+        const tile = handleComputerAttacks();
+        console.log(tile);
+        handleClicks(tile);
+      },1900)
+    }
+  }
 
   function handleClicks(tile) {
-    tile.addEventListener("click", () => {
-      const currentBoard = checkTurn(playerBoard, computerBoard, Player1Turn);
-      const attackVectors = checkAttackVectors(currentBoard, players);
-      const attack = attackVectors.attackFunction(
-        tile.value,
-        attackVectors.attackFleet
-      );
+    const currentBoard = checkTurn(playerBoard, computerBoard, Player1Turn);
+    const attackVectors = checkAttackVectors(currentBoard, players);
+    const attack = attackVectors.attackFunction(
+      tile.value,
+      attackVectors.attackFleet
+    );
       if (attack === 1) {
         tile.classList.add("hit");
-        if(attackVectors.attackFleet.allShipsSunk()){
-          gameOverScreen(attackVectors.opponent.name);
-        }
-        ;
+        nextTurn();
+        
       } else if (attack === 2) {
         tile.classList.add("miss");
         Player1Turn = !Player1Turn;
-        checkTurn(playerBoard, computerBoard, Player1Turn);
       }
-      checkWinConditions(attackVectors.attackFleet, players);
-    });
+      if (attackVectors.attackFleet.allShipsSunk()) {
+        gameOverScreen(attackVectors.opponent.name);
+        return;
+      }
+
+      nextTurn();
+ 
   }
 
-  playerTiles.forEach((tile) => {
-    handleClicks(tile);
-  });
-  computerTiles.forEach((tile) => {
-    handleClicks(tile);
-  });
+  function handleComputerAttacks() {
+    let attackTile;
+    const playerBoard = players.playerBoard.board;
+    const unavailable = players.playerBoard.attacked;
+    let attackPosition = Math.floor(Math.random() * playerBoard.length);
+    while (unavailable.includes(playerBoard[attackPosition])) {
+      handleComputerAttacks();
+      break;
+    }
+   playerTiles.forEach((tile) => {
+    if (tile.value === playerBoard[attackPosition]) {
+      attackTile = tile;
+    }})
+    return attackTile;
+  }
 }
 
 function checkTurn(playerBoard, computerBoard, turn) {
@@ -57,7 +91,6 @@ function checkTurn(playerBoard, computerBoard, turn) {
     computerBoard.forEach((el) => {
       el.style.display = "none";
     });
-    
     return 2;
   }
 }
