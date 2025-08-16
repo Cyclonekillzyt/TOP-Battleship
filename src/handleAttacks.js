@@ -6,29 +6,22 @@ export function handleAttack(players) {
 
   const playerBoard = document.querySelectorAll(".human");
   const computerBoard = document.querySelectorAll(".computer");
-  start();
-
-  function start() {
-    console.log('hi')
-    Player1Turn = true;
-    nextTurn();
-  }
+  Player1Turn = true;
+  nextTurn();
 
   function nextTurn() {
-   checkTurn(playerBoard, computerBoard, Player1Turn);
-    if(Player1Turn){
+    checkTurn(playerBoard, computerBoard, Player1Turn);
+    if (Player1Turn) {
       computerTiles.forEach((tile) => {
         tile.onclick = () => {
           handleClicks(tile);
         };
       });
-    }
-    else{
-      setTimeout(() =>{
-        const tile = handleComputerAttacks();
-        console.log(tile);
+    } else {
+      setTimeout(() => {
+        const tile = handleComputerAttacks(players, playerTiles);
         handleClicks(tile);
-      },1900)
+      }, 1000);
     }
   }
 
@@ -39,41 +32,46 @@ export function handleAttack(players) {
       tile.value,
       attackVectors.attackFleet
     );
-      if (attack === 1) {
+    if (attack === 1) {
+      if (tile.classList.contains("selected")) {
+        tile.classList.remove("selected");
         tile.classList.add("hit");
-        nextTurn();
-        
-      } else if (attack === 2) {
-        tile.classList.add("miss");
-        Player1Turn = !Player1Turn;
+      } else {
+        tile.classList.add("hit");
       }
-      if (attackVectors.attackFleet.allShipsSunk()) {
-        gameOverScreen(attackVectors.opponent.name);
-        return;
-      }
-
       nextTurn();
- 
-  }
-
-  function handleComputerAttacks() {
-    let attackTile;
-    const playerBoard = players.playerBoard.board;
-    const unavailable = players.playerBoard.attacked;
-    let attackPosition = Math.floor(Math.random() * playerBoard.length);
-    while (unavailable.includes(playerBoard[attackPosition])) {
-      handleComputerAttacks();
-      break;
+      return;
+    } else if (attack === 2) {
+      tile.classList.add("miss");
+      Player1Turn = !Player1Turn;
     }
-   playerTiles.forEach((tile) => {
-    if (tile.value === playerBoard[attackPosition]) {
-      attackTile = tile;
-    }})
-    return attackTile;
+    if (attackVectors.attackFleet.allShipsSunk()) {
+      gameOverScreen(attackVectors.opponent.name);
+      return;
+    }
+
+    nextTurn();
   }
 }
 
-function checkTurn(playerBoard, computerBoard, turn) {
+function handleComputerAttacks(players, playerTiles) {
+  let attackTile;
+  const playerBoard = players.playerBoard.board;
+  const unavailable = players.playerBoard.attacked;
+  let attackPosition = Math.floor(Math.random() * playerBoard.length);
+  while (unavailable.includes(playerBoard[attackPosition])) {
+    handleComputerAttacks(players, playerTiles);
+    break;
+  }
+  playerTiles.forEach((tile) => {
+    if (tile.value === playerBoard[attackPosition]) {
+      attackTile = tile;
+    }
+  });
+  return attackTile;
+}
+
+export function checkTurn(playerBoard, computerBoard, turn) {
   if (turn) {
     playerBoard.forEach((el) => {
       el.style.display = "none";
@@ -112,4 +110,3 @@ function checkAttackVectors(ships, players) {
     return { attackFleet, attackFunction, opponent };
   }
 }
-

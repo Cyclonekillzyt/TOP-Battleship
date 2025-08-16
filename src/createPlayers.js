@@ -40,4 +40,3 @@ export function initializePlayers(playerName, size) {
   };
 }
 
-export function createPlayers() {}

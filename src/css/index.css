@@ -42,6 +42,10 @@
   background-color: lightblue;
 }
 
+.selected {
+  background-color: yellow;
+}
+
 
 .gameOver{
   width: 100vw;

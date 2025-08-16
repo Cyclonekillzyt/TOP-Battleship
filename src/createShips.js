@@ -1,26 +1,90 @@
-export function createShips(ship, playerCoords, computerCoords) {
-  const playerCoord = objectLoop(playerCoords);
-  const computerCoord = objectLoop(computerCoords);
+import { checkTurn } from "./handleAttacks";
+export async function createShips(ship) {
+  const playerBoard = document.querySelectorAll(".human");
+  const computerBoard = document.querySelectorAll(".computer");
+  const playerTiles = document.querySelectorAll(".human .tiles");
+  const computerTiles = document.querySelectorAll(".computer .tiles");
+  const orientation = document.getElementById("orientation");
   const playerShips = ship.playerFleet.ships;
   const computerShips = ship.computerFleet.ships;
-  for (let i = 0; i < playerShips.length; i++) {
-    ship.playerBoard.placeShip(
-      playerShips[i],
-      playerCoord[i][0],
-      playerCoord[i][1]
+
+  placeCOmputerShips(ship, computerShips,computerTiles);
+
+  checkTurn(playerBoard, computerBoard, false);
+  checkOrientation(orientation);
+  console.log(orientation);
+  console.log(ship.playerBoard.placeShip);
+  
+  for (let i = 0; i < playerShips.length;){
+    let currentShip = playerShips[i];
+    alert(`Commander Place your ${currentShip.name}`)
+    let coords = await waitForTileClick(playerTiles);
+    let placed = ship.playerBoard.placeShip(currentShip, coords.value, orientation.value)
+    if (placed === 3) { 
+      continue;
+    }
+    console.log(placed.pos);
+    markTiles(playerTiles, placed.pos);
+    i++;
+  }
+
+}
+
+function generateRandomIndex(size) {
+  return Math.floor(Math.random() * size);
+}
+function placeCOmputerShips(ship, computerShips, computerTiles) {
+  for (let i = 0; i < computerShips.length;){
+    let currentShip = computerShips[i];
+    let randomCoord = generateRandomIndex(computerTiles.length);
+    let randomOrientation = generateRandomIndex(2);
+    let placed = ship.computerBoard.placeShip(
+      currentShip,
+      computerTiles[randomCoord].value,
+      randomOrientation
     );
-    ship.computerBoard.placeShip(
-      computerShips[i],
-      computerCoord[i][0],
-      computerCoord[i][1]
-    );
+    if (placed === 3) { 
+      continue;
+    }
+    i++;
   }
 }
 
-const objectLoop = (object) => {
-  const objects = [];
-  for (const value of Object.values(object)) {
-    objects.push(value);
-  }
-  return objects;
-};
+function waitForTileClick(tiles){
+  return new Promise((resolve) => {
+    function handleClick(e) {
+      const tile = e.target;
+      tiles.forEach(el => el.removeEventListener('click', handleClick));
+      resolve(tile);
+    }
+    tiles.forEach(el => el.addEventListener('click', handleClick));
+  })
+}
+
+function checkOrientation(button) {
+   button.addEventListener('click', () => {
+      if (button.value == 1) {
+        button.value = 2;
+        button.textContent = 'column'
+
+      }
+      else {
+        button.value = 1;
+        button.textContent = "row";
+    
+      }
+   })
+}
+
+function markTiles(tiles, coords) {
+  if (tiles.length == 0) return;
+  tiles.forEach((tile) => {
+    if (coords.includes(tile.value)) {
+      tile.classList.add("selected");
+    }
+    else {
+      tile.classList.remove('selected');
+    }
+  })
+}
+

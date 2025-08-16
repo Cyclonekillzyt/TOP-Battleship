@@ -1,3 +1,5 @@
+import { createShips } from "./createShips";
+import { handleAttack } from "./handleAttacks";
 const app = document.getElementById("app");
 export function boardLayout(size, coords, type, title = "") {
   // creates  gameBoard
@@ -35,53 +37,62 @@ export function gameOverScreen(winner) {
   app.append(gameOver);
 }
 
-export function startScreen(init, createShips, handleAttack) {
+function placeShips(init) {
+  const form = elements("form");
+  const buttons = elements("button", 3);
+  const classLists = ["row", "reset", "submit"];
+
+  for (let i = 0; i < classLists.length; i++) {
+    buttons[i].classList.add(classLists[i]);
+    buttons[i].textContent = classLists[i];
+    form.append(buttons[i]);
+    if (i != 2) {
+      buttons[i].type = "button";
+    }
+  }
+
+  buttons[0].value = 1;
+  buttons[0].id = 'orientation';
+  app.append(form);
+  createShips(init);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    handleAttack(init);
+  });
+}
+
+export function startScreen(init) {
   const startContainer = elements("form");
   const inputs = elements("input", 2);
   const buttons = elements("button");
   startContainer.classList.add("startScreen");
-  inputs[0].classList.add("playerName");
-  inputs[0].type = "text";
-  inputs[0].placeholder = "Name Commander";
-  inputs[1].classList.add("boardSize");
-  inputs[1].type = "number";
+  const classLists = ["playerName", "boardSize"];
+  const placeholders = ["Name Commander", 10];
+  const types = ["text", "number"];
+  for (let i = 0; i < classLists.length; i++) {
+    inputs[i].classList.add(classLists[i]);
+    inputs[i].placeholder = placeholders[i];
+    inputs[i].type = types[i];
+  }
   inputs[1].min = 8;
   inputs[1].max = 10;
-  inputs[1].placeholder = 10;
   buttons.classList.add("startButton");
   buttons.textContent = "Start";
   buttons.type = "submit";
 
-
   startContainer.addEventListener("submit", (e) => {
     e.preventDefault();
     startContainer.style.display = "none";
-    if(inputs[1].value == ''){
-      inputs[1].value = '10';
+    if (inputs[1].value == "") {
+      inputs[1].value = "10";
     }
-    const playerShipCoords = {
-      Carrier: ["A1", 1],
-      Battleship: ["C5", 1],
-      Cruiser: ["F1", 2],
-      Submarine: ["D6", 2],
-      Destroyer: ["J1", 2],
-    };
-    const computerShipCoords = {
-      Carrier: ["D1", 1],
-      Battleship: ["A6", 2],
-      Cruiser: ["A1", 2],
-      Submarine: ["B4", 2],
-      Destroyer: ["I3", 2],
-    };
-
     const initPlayers = init(inputs[0].value, inputs[1].value);
-    createShips(initPlayers, playerShipCoords, computerShipCoords);
-    handleAttack(initPlayers);
-   
+    placeShips(initPlayers);
   });
   startContainer.append(inputs[0], inputs[1], buttons);
   app.append(startContainer);
 }
+
 
 function elements(type, amount = 1) {
   if (amount === 1) {

@@ -1,6 +1,7 @@
 export class Ship {
-  constructor(length) {
+  constructor(length, name) {
     this.length = length;
+    this.name = name;
     this.hitCount = 0;
     this.sunk = false;
     this.position = [];
@@ -102,14 +103,15 @@ export class Gameboard {
       let startCoords = searchRow.findIndex((item) => item === coordinates);
 
       if (searchRow.length - startCoords < ship.length) {
-        return "Ship wont fit";
+        alert("Not enough space to place the ship in this row");
+        return 3;
       }
 
       for (let i = 0; i < ship.length; i++) {
         const coord = searchRow[startCoords];
         if (this.taken.includes(coord)) {
           alert(`Spot already taken ${coord}`);
-          return { error: "position taken" };
+          return 3;
         }
 
         coords.push(coord);
@@ -118,23 +120,22 @@ export class Gameboard {
 
       this.taken.push(...coords);
       ship.position.push(...coords);
-      console.log(this.taken);
     }
     if (orientation == 2) {
       let searchCol = traverseObjects(this.columns, coordinates); // searches the rows object and returns a array that contain the coordinates
 
       let startCoords = searchCol.findIndex((item) => item === coordinates);
-      console.log(searchCol);
 
       if (searchCol.length - startCoords < ship.length) {
-        return "Ship wont fit";
+        alert("Not enough space to place the ship in this column");
+        return 3;
       }
 
       for (let i = 0; i < ship.length; i++) {
         const coord = searchCol[startCoords];
         if (this.taken.includes(coord)) {
           alert(`Spot already taken ${coord}`);
-          return { error: "position taken" };
+          return 3;
         }
 
         coords.push(coord);
@@ -142,13 +143,11 @@ export class Gameboard {
       }
       this.taken.push(...coords);
       ship.position.push(...coords);
-      console.log(this.taken);
     }
-    return { pos: ship.position, taken: this.taken };
+    return { pos:this.taken };
   }
   //receives attack coordinates and the opponent players fleet and returns 1 if its a hit and 2 if its a miss;
   receiveAttack(coord, fleet) {
-    console.log(coord)
     if (!this.attacked.includes(coord)) {
       let attackedShip = fleet.getShipAt(coord);
       if (attackedShip) {
@@ -174,11 +173,13 @@ export class Player {
 
   PlayerFleet() {
     const shipsLength = [5, 4, 3, 3, 2];
+    const shipsName = ['Carrier', 'Battleship', 'Cruiser', 'Submarine', 'Destroyer']
+
     const fleet = new Fleet();
-    shipsLength.forEach((length) => {
-      const ship = new Ship(length);
+    for(let i = 0; i< shipsLength.length; i++){
+      const ship = new Ship(shipsLength[i], shipsName[i]);
       fleet.addShip(ship);
-    });
+    }
     return fleet;
   }
   PlayerGameboard(size) {
