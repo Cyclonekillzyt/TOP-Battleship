@@ -30,14 +30,14 @@ export async function createShips(ship) {
 
 }
 
-function generateRandomIndex(size) {
-  return Math.floor(Math.random() * size);
-}
+
 function placeCOmputerShips(ship, computerShips, computerTiles) {
   for (let i = 0; i < computerShips.length;){
+    console.log(computerShips[i],computerShips.length);
     let currentShip = computerShips[i];
-    let randomCoord = generateRandomIndex(computerTiles.length);
-    let randomOrientation = generateRandomIndex(2);
+    let randomCoord = Math.floor(Math.random() * computerTiles.length);
+    let randomOrientation = Math.floor(Math.random() * 2) + 1;
+    console.log(randomCoord, randomOrientation);
     let placed = ship.computerBoard.placeShip(
       currentShip,
       computerTiles[randomCoord].value,
