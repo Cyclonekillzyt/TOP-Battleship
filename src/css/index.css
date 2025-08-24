@@ -17,6 +17,7 @@
   background-image: url(/src/assets/bg.jpg);
 }
 
+
 .board {
   display: grid;
   aspect-ratio: 1/1;
