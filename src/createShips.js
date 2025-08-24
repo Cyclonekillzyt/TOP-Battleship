@@ -8,22 +8,22 @@ export async function createShips(ship) {
   const playerShips = ship.playerFleet.ships;
   const computerShips = ship.computerFleet.ships;
 
-  placeCOmputerShips(ship, computerShips,computerTiles);
+  placeComputerShips(ship, computerShips,computerTiles);
 
   checkTurn(playerBoard, computerBoard, false);
   checkOrientation(orientation);
-  console.log(orientation);
-  console.log(ship.playerBoard.placeShip);
+  
   
   for (let i = 0; i < playerShips.length;){
     let currentShip = playerShips[i];
     alert(`Commander Place your ${currentShip.name}`)
     let coords = await waitForTileClick(playerTiles);
     let placed = ship.playerBoard.placeShip(currentShip, coords.value, orientation.value)
-    if (placed === 3) { 
+      if (placed.code === 3) { 
+      alert(placed.message);
       continue;
     }
-    console.log(placed.pos);
+   
     markTiles(playerTiles, placed.pos);
     i++;
   }
@@ -31,19 +31,17 @@ export async function createShips(ship) {
 }
 
 
-function placeCOmputerShips(ship, computerShips, computerTiles) {
+function placeComputerShips(ship, computerShips, computerTiles) {
   for (let i = 0; i < computerShips.length;){
-    console.log(computerShips[i],computerShips.length);
     let currentShip = computerShips[i];
     let randomCoord = Math.floor(Math.random() * computerTiles.length);
     let randomOrientation = Math.floor(Math.random() * 2) + 1;
-    console.log(randomCoord, randomOrientation);
     let placed = ship.computerBoard.placeShip(
       currentShip,
       computerTiles[randomCoord].value,
       randomOrientation
     );
-    if (placed === 3) { 
+    if (placed.code === 3) { 
       continue;
     }
     i++;

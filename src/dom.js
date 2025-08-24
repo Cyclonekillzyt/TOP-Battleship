@@ -13,7 +13,7 @@ export function boardLayout(size, coords, type, title = "") {
     board.append(el);
   });
   const boardName = elements("p");
-  boardName.classList.add(type);
+  boardName.classList.add(type, 'boardTitle');
   boardName.textContent = title;
   board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
   board.style.gridTemplateRows = `repeat(${size}, 1fr)`;
@@ -52,12 +52,13 @@ function placeShips(init) {
   }
 
   buttons[0].value = 1;
-  buttons[0].id = 'orientation';
+  buttons[0].id = "orientation";
   app.append(form);
   createShips(init);
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     handleAttack(init);
+    form.style.display = 'none';
   });
 }
 
@@ -80,9 +81,47 @@ export function startScreen(init) {
   buttons.textContent = "Start";
   buttons.type = "submit";
 
+  const svgContainer = elements("div");
+  svgContainer.classList.add("title-banner");
+
+  const svgAttrib = {
+    viewBox: "0 0 400 400",
+  };
+
+  const pathAttribs = {
+    id: "curve",
+    d: "M0 200 q 200 -200 400 0",
+    fill: "none",
+    stroke: "none",
+  };
+  const textAttribs = {
+    "font-size": "20",
+    "font-weight" : "bold",
+    fill: "#00ffcc",
+    "font-family": "Orbitron, sans-serif",
+  };
+  const textPathAttribs = {
+    href: "#curve",
+    startOffset: "50%",
+    "text-anchor": "middle",
+    lengthAdjust: "spacingAndGlyphs",
+  };
+
+  const svg = svgElements("svg", svgAttrib);
+  const path = svgElements("path", pathAttribs);
+  const text = svgElements("text", textAttribs);
+  const textPath = svgElements("textPath", textPathAttribs);
+  svg.classList.add("header-text");
+  textPath.textContent = "Welcome to BattleShip";
+
+  text.append(textPath);
+  svg.append(path, text);
+  svgContainer.append(svg);
+
   startContainer.addEventListener("submit", (e) => {
     e.preventDefault();
     startContainer.style.display = "none";
+    svgContainer.style.display = "none";
     if (inputs[1].value == "") {
       inputs[1].value = "10";
     }
@@ -90,9 +129,16 @@ export function startScreen(init) {
     placeShips(initPlayers);
   });
   startContainer.append(inputs[0], inputs[1], buttons);
-  app.append(startContainer);
+  app.append(svgContainer, startContainer);
 }
 
+function svgElements(type, attributes) {
+  const element = document.createElementNS("http://www.w3.org/2000/svg", type);
+  for (const [key, value] of Object.entries(attributes)) {
+    element.setAttribute(key, value);
+  }
+  return element;
+}
 
 function elements(type, amount = 1) {
   if (amount === 1) {

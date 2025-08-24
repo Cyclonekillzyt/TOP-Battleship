@@ -20,13 +20,13 @@ export function initializePlayers(playerName, size) {
     size,
     playerBoard.board,
     player.type,
-    "Player Board:"
+    "Player Board"
   );
   const domComputerBoard = boardLayout(
     size,
     computerBoard.board,
     computerPlayer.type,
-    "Computer Board:"
+    "Computer Board"
   );
   return {
     player,

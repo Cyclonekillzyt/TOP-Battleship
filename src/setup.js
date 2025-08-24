@@ -7,12 +7,11 @@ export class Ship {
     this.position = [];
   }
   Hit() {
-    console.log("Hit");
+    
     return (this.hitCount += 1);
   }
   isSunk() {
     if (this.hitCount === this.length) {
-      console.log("going down");
       return true;
     } else {
       return false;
@@ -44,7 +43,7 @@ export class Fleet {
 }
 
 export function traverseObjects(object, coords) {
-  for(const value of Object.values(object)){
+  for(const value of object){
     if (value.includes(coords)){
       return value;
     }
@@ -54,7 +53,7 @@ export function traverseObjects(object, coords) {
 export class Gameboard {
   constructor(size) {
     this.board = [];
-    this.rows = {};
+    this.rows = [];
     this.columns = [];
     this.size = size;
     this.boardSize();
@@ -103,15 +102,19 @@ export class Gameboard {
       let startCoords = searchRow.findIndex((item) => item === coordinates);
 
       if (searchRow.length - startCoords < ship.length) {
-        alert("Not enough space to place the ship in this row");
-        return 3;
+        return {
+          code: 3,
+          message: "Not enough space to place the ship in this row",
+        };
       }
 
       for (let i = 0; i < ship.length; i++) {
         const coord = searchRow[startCoords];
         if (this.taken.includes(coord)) {
-          alert(`Spot already taken ${coord}`);
-          return 3;
+           return {
+             code: 3,
+             message: `Spot already taken ${coord}`,
+           };
         }
 
         coords.push(coord);
@@ -127,15 +130,19 @@ export class Gameboard {
       let startCoords = searchCol.findIndex((item) => item === coordinates);
 
       if (searchCol.length - startCoords < ship.length) {
-        alert("Not enough space to place the ship in this column");
-        return 3;
+         return {
+           code: 3,
+           message: "Not enough space to place the ship in this column",
+         };
       }
 
       for (let i = 0; i < ship.length; i++) {
         const coord = searchCol[startCoords];
         if (this.taken.includes(coord)) {
-          alert(`Spot already taken ${coord}`);
-          return 3;
+           return {
+             code: 3,
+             message: `Spot already taken ${coord}`,
+           };
         }
 
         coords.push(coord);

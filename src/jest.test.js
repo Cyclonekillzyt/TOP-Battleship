@@ -52,7 +52,7 @@ describe("Gameboard class", () => {
     const board = new Gameboard(10);
     const ship = new Ship(5, "Carrier");
     const result = board.placeShip(ship, "I8", 1);
-    expect(result).toBe(3);
+    expect(result.code).toBe(3);
     expect(ship.position).toEqual([]);
   });
 
@@ -64,7 +64,7 @@ describe("Gameboard class", () => {
     board.placeShip(ship1, "A1", 1);
     const result = board.placeShip(ship2, "A1", 1);
 
-    expect(result).toBe(3);
+    expect(result.code).toBe(3);
     expect(ship2.position).toEqual([]);
   });
 
